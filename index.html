@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sia AI</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="page-index">
+
+  <div class="setup-wrap">
+    <div class="setup-card">
+
+      <!-- Brand -->
+      <div class="brand">
+        <div class="brand-wordmark"><em>Sia</em> AI</div>
+        <div class="brand-tagline">Your virtual companion</div>
+      </div>
+
+      <!-- Avatar upload -->
+      <div class="avatar-section">
+        <label class="avatar-label" for="avatarInput" title="Upload her photo">
+          <div class="avatar-ring">
+            <img
+              id="avatarPreview"
+              class="avatar-img"
+              src="avatar.png"
+              alt="Profile"
+              onerror="this.src='avatar.png'"
+            />
+            <div class="avatar-overlay">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                <circle cx="12" cy="13" r="4"/>
+              </svg>
+              <span>Change</span>
+            </div>
+          </div>
+        </label>
+        <input type="file" id="avatarInput" accept="image/*" />
+        <p class="avatar-hint">Tap to upload her photo</p>
+      </div>
+
+      <!-- Fields -->
+      <div class="section-divider">
+        <span>Profile Setup</span>
+      </div>
+
+      <div class="fields">
+        <div class="field">
+          <label class="field-label" for="usernameInput">Your Name</label>
+          <input
+            type="text"
+            id="usernameInput"
+            placeholder="e.g. Rafid"
+            maxlength="30"
+            autocomplete="off"
+            spellcheck="false"
+          />
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="gfnameInput">Her Nickname</label>
+          <input
+            type="text"
+            id="gfnameInput"
+            placeholder="e.g. Mitu"
+            maxlength="30"
+            autocomplete="off"
+            spellcheck="false"
+          />
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="gfnamefullInput">Her Full Name</label>
+          <input
+            type="text"
+            id="gfnamefullInput"
+            placeholder="e.g. Mitusha Rahman"
+            maxlength="60"
+            autocomplete="off"
+            spellcheck="false"
+          />
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <button class="start-btn" id="startBtn" type="button">
+        <span class="start-btn-inner">
+          Start Chatting
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </span>
+      </button>
+
+      <p class="setup-footer">Leave any field blank to use defaults</p>
+    </div>
+  </div>
+
+  <script>
+    // ── Restore saved profile ──────────────────────────────────
+    try {
+      const s = JSON.parse(localStorage.getItem('sia_user') || 'null');
+      if (s) {
+        if (s.username)   document.getElementById('usernameInput').value   = s.username;
+        if (s.gfname)     document.getElementById('gfnameInput').value     = s.gfname;
+        if (s.gfnamefull) document.getElementById('gfnamefullInput').value = s.gfnamefull;
+        if (s.pic)        document.getElementById('avatarPreview').src      = s.pic;
+      }
+    } catch {}
+
+    // ── Avatar preview ─────────────────────────────────────────
+    document.getElementById('avatarInput').addEventListener('change', function () {
+      const file = this.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => { document.getElementById('avatarPreview').src = e.target.result; };
+      reader.readAsDataURL(file);
+    });
+
+    // ── Enter key on last field ────────────────────────────────
+    document.getElementById('gfnamefullInput')
+      .addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
+
+    // ── Start ──────────────────────────────────────────────────
+    document.getElementById('startBtn').addEventListener('click', go);
+
+    function go() {
+      const pic = document.getElementById('avatarPreview').src;
+      const data = {
+        username:   document.getElementById('usernameInput').value.trim()   || 'Jaan',
+        gfname:     document.getElementById('gfnameInput').value.trim()     || 'Sia',
+        gfnamefull: document.getElementById('gfnamefullInput').value.trim() || 'Sia Akter',
+        pic:        pic.startsWith('data:') ? pic : null,
+      };
+      localStorage.setItem('sia_user', JSON.stringify(data));
+      localStorage.removeItem('sia_history');
+      window.location.href = 'chat.html';
+    }
+  </script>
+</body>
+</html>
